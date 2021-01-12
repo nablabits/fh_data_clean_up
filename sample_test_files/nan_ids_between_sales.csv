@@ -1,0 +1,6 @@
+﻿"Ventas","","","","","","","","","","","","","","","","","","","","Reservas",""
+"Creado en hora","Creado en fecha","Pago o reembolso","ID de pago o reembolso","Creado por","Nota de pago","Tipo de pago","Tipo de pago de afiliado","Tipo de tarjeta de crédito","Bruto","Gasto de gestión","Neto","Pago bruto","Gasto de gestión de pago","Pago neto","Reembolso bruto","Gasto de gestión de reembolso","Reembolso neto","Subtotal pagado","Impuesto pagado","ID de reserva","Afiliado"
+"14:08","2019-05-26","Payment","#240839","Online","","tarédito","","Visa","79,00 €","-2,04 €","76,96 €","79,00 €","-2,04 €","76,96 €","0,00 €","0,00 €","0,00 €","65,30 €","13,70 €","#3642",""
+"16:41","2019-05-27","Payment","","Aitaga","","afiliado","","","64,00 €","0,00 €","64,00 €","64,00 €","0,00 €","64,00 €","0,00 €","0,00 €","0,00 €","52,90 €","11,10 €","#816600","GUR"
+"16:43","2019-05-27","Payment","#22424","Aa","","afiliado","","","64,00 €","0,00 €","64,00 €","64,00 €","0,00 €","64,00 €","0,00 €","0,00 €","0,00 €","52,90 €","11,10 €","#16723","EUR"
+"","","","","","","","","","93.0, €","-2736 €","9,78 €","9534 €","-285 €","9,1 €","- €","157 €","-18,73 €","77,86 €","1,28 €","",""

@@ -150,9 +150,98 @@ def clean_bookings(source: str) -> pd.DataFrame:
     return bookings
 
 
-def clean_sales(source):
-    """Clean the sales data."""
-    print("Cleaning sales source {}.".format(source))
+def clean_sales(source: str) -> pd.DataFrame:
+    """Clean the sales data.
+
+    Arguments:
+    source, a path like string that points to a csv file
+
+    Returns:
+    A pandas DataFrame object with the data ready to be uploaded.
+    """
+    col_map = {
+        'Creado en hora': 'create_time',
+        'Creado en fecha': 'create_date',
+        'ID de pago o reembolso': 'id',
+        'Creado por': 'created_by',
+        'Tipo de pago': 'pay_method',
+        'Tipo de tarjeta de crédito': 'card_type',
+        'Bruto': 'gross',
+        'Gasto de gestión': 'tpv_charge',
+        'Neto': 'net',
+        'Pago bruto': 'gross_paid',
+        'Gasto de gestión de pago': 'tpv_charge_paid',
+        'Pago neto': 'net_paid',
+        'Reembolso bruto': 'gross_refund',
+        'Gasto de gestión de reembolso': 'gross_refund_tpv_charge',
+        'Reembolso neto': 'net_refund',
+        'Subtotal pagado': 'subtotal_paid',
+        'Impuesto pagado': 'tax_paid',
+        'ID de reserva': 'booking_id', }
+
+    # As with clean_bookings, if any of the columns in the col_map is missing,
+    # it will raise value error, whereas if there are more on the csv file they
+    # won't be used. This way we ensure that only the columns in the map are
+    # used, no more no less
+    sales_raw = pd.read_csv(
+        source, header=1, engine='python', usecols=col_map.keys())
+
+    sales = sales_raw.rename(columns=col_map)
+
+    # Last row is likely to have totals and therefore won't have booking id so
+    # get rid of it
+    last_row = sales.iloc[-1:].index
+    f = sales.index.isin(last_row) & sales.id.isna()
+    if f.sum():
+        sales.drop(index=sales[f].index, inplace=True)
+
+    # Ensure there are no more nan ids across the dataframe
+    if not sales[sales.id.isna()].empty:
+        raise ValueError("There are rows with no id.")
+
+    # Transform float columns
+    float_cols = [
+        'gross',
+        'tpv_charge',
+        'net',
+        'gross_paid',
+        'tpv_charge_paid',
+        'net_paid',
+        'gross_refund',
+        'gross_refund_tpv_charge',
+        'net_refund',
+        'subtotal_paid',
+        'tax_paid', ]
+
+    for col in float_cols:
+        sales.loc[:, col] = sales[col].str.replace('.', '')
+        sales.loc[:, col] = sales[col].str.replace(',', '.')
+        sales.loc[:, col] = sales[col].str.replace('€', '').str.strip()
+        sales.loc[:, col] = sales[col].astype(float)
+
+    # Convert ids to ints
+    sales.id = sales.id.str.replace('#', '').astype(int)
+    sales.booking_id = sales.booking_id.str.replace('#', '').astype(int)
+
+    return sales
+
+def create_upload(df: pd.DataFrame, filename: str) -> str:
+    """Create an upload file out of a cleaned dataframe."""
+
+    if filename not in ("bookings", "sales"):
+        raise ValueError("Filename should be either bookings or sales.")
+
+    df.to_csv('{}.csv'.format(filename), index=False)
+
+    # create a SQL upload query
+    sql_query = (
+        """COPY {}({})
+FROM '/home/redash/{}.csv'
+DELIMITER ','
+CSV HEADER;""").format(filename, ','.join(df.columns.tolist()), filename)
+    sql_file = "{}.sql".format(filename)
+    with open(sql_file, 'w') as f:
+        f.write(sql_query)
 
 
 if __name__ == "__main__":
