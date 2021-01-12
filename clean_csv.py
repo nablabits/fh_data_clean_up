@@ -17,9 +17,11 @@ def main():
     args = parser.parse_args()
 
     if args.origin == "b":
-        return clean_bookings(args.raw_csv)
+        df = clean_bookings(args.raw_csv)
+        create_upload(df, "bookings")
     else:
-        return clean_sales(args.raw_csv)
+        df = clean_sales(args.raw_csv)
+        create_upload(df, "sales")
 
 
 def clean_bookings(source: str) -> pd.DataFrame:
