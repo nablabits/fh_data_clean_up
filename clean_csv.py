@@ -227,7 +227,8 @@ def clean_sales(source: str) -> pd.DataFrame:
 
     return sales
 
-def create_upload(df: pd.DataFrame, filename: str) -> str:
+def create_upload(df: pd.DataFrame, filename: str,
+                  taget_dir: str = '/home/redash/' ) -> str:
     """Create an upload file out of a cleaned dataframe."""
 
     if filename not in ("bookings", "sales"):
@@ -237,10 +238,12 @@ def create_upload(df: pd.DataFrame, filename: str) -> str:
 
     # create a SQL upload query
     sql_query = (
-        """COPY {}({})
-FROM '/home/redash/{}.csv'
+        """TRUNCATE {} CASCADE;
+COPY {}({})
+FROM '{}{}.csv'
 DELIMITER ','
-CSV HEADER;""").format(filename, ','.join(df.columns.tolist()), filename)
+CSV HEADER;""").format(
+        filename, filename, ','.join(df.columns.tolist()), taget_dir, filename)
     sql_file = "{}.sql".format(filename)
     with open(sql_file, 'w') as f:
         f.write(sql_query)

@@ -26,9 +26,12 @@ $ ssh user@host
 postgres@host $ psql db_name < /home/redash/bookings.sql
 ```
 
-If there's no such user on the system be sure to change the path accordingly
-inside `create_upload()`
+Notice that sales depend on bookings through `booking_id` constraint, so
+bookings should be dumped first on the db. 
 
+**Warning:**
+For the sake of simplicity, previous entries will be dropped from db, so always
+upload a full copy of the data.
 
 ## Requirements
 python 3.8.5 and pandas=1.0.5
