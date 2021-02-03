@@ -164,6 +164,7 @@ def clean_sales(source: str) -> pd.DataFrame:
     col_map = {
         'Creado en hora': 'create_time',
         'Creado en fecha': 'create_date',
+        'Pago o reembolso': 'pay_refund',
         'ID de pago o reembolso': 'id',
         'Creado por': 'created_by',
         'Tipo de pago': 'pay_method',
